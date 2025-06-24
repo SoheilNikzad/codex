@@ -364,10 +364,10 @@ Once everything is running:
 
 ## 🤝 Credits
 
-Created by **Soheil Nikzad** (<https://raakh.net>). Inspired by Optimism's OP Stack and released under the [MIT License](LICENSE).
+Created by **HOOPAAD**. Inspired by Optimism's OP Stack and released under the [MIT License](LICENSE).
 
 =======
-This repo is created and maintained by [Soheil Nikzad](https://raakh.net), inspired by Optimism's OP Stack and tailored for independent sovereign chains like RAAKH.
+This repo is created and maintained by HOOPAAD, inspired by Optimism's OP Stack and tailored for independent sovereign chains like RAAKH.
 
 ---
 =======
