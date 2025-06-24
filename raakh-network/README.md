@@ -1,14 +1,5 @@
 # RAAKH Network – Complete Installation & Deployment Guide
 
-This guide explains how to install and run a local OP Stack based blockchain called **RAAKH Network**. It is written for developers and enthusiasts who want to recreate or extend the RAAKH Devnet without prior experience with Optimism, Docker, or Linux administration. Every command is included and no steps are assumed.
-=======
-# 📘 RAAKH Network – Full Setup Guide (Ultra Detailed, No Knowledge Assumed)
-
-This document is **designed for absolute clarity**. Even if you have never set up a blockchain or Linux server before, you can follow every step here and fully deploy the RAAKH network—a Layer 2 blockchain built on Optimism's OP Stack.
-
-> No assumptions. Every command is explained. Every config is included.
-=======
-
 # 📘 RAAKH Network – Full Setup Guide (Ultra Detailed, No Knowledge Assumed)
 
 This document is **designed for absolute clarity**. Even if you've never set up a blockchain or Linux server before, you can follow every step here and fully deploy the RAAKH network—a Layer 2 blockchain built on Optimism's OP Stack.
