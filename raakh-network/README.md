@@ -242,7 +242,7 @@ You now have a fully functional devnet. Feel free to extend it with Blockscout o
 
 ## 🤝 Credits
 
-Created by **Soheil Nikzad** (<https://raakh.net>). Inspired by Optimism's OP Stack and tailored for independent chains like RAAKH.
+Created by **HOOPAAD** 
 
 Released under the [MIT License](LICENSE).
 =======
