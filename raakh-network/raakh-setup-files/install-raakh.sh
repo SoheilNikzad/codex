@@ -43,3 +43,5 @@ systemctl reload nginx
 certbot --nginx -d rpc.raakh.net --non-interactive --agree-tos -m admin@raakh.net || true
 
 echo "Installation complete. RPC available at https://rpc.raakh.net"
+=======
+#!/bin/bash\n# TODO: implement installer
