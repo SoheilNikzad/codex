@@ -1,30 +1,13 @@
-# 📘 RAAKH Network – Full Setup Guide (Ultra Detailed, No Knowledge Assumed)
+# RAAKH Network – Complete Installation & Deployment Guide
 
-This document is **designed for absolute clarity**. Even if you have never set up a blockchain or Linux server before, you can follow every step here and fully deploy the RAAKH network—a Layer 2 blockchain built on Optimism's OP Stack.
-
-> No assumptions. Every command is explained. Every config is included.
-
----
-
-# RAAKH Blockchain Network – Full Reproducible Setup (OP Stack Based)
-
-Welcome to the RAAKH network documentation. This guide walks you through the **exact steps** required to deploy a clone of the RAAKH L2 blockchain network on your own infrastructure using [Optimism's OP Stack](https://stack.optimism.io/).
-
-This repository provides:
-- The full configuration and genesis file of the RAAKH chain
-- A working OP Stack setup (`op-geth`, `op-node`, etc.)
-- A tested `install-raakh.sh` installer script
-- An nginx setup with SSL config for RPC endpoints
-- Deployment-ready `kurtosis.yml`, `network_params.yaml`, and helper scripts
+This guide explains how to install and run a local OP Stack based blockchain called **RAAKH Network**. It is written for developers and enthusiasts who want to recreate or extend the RAAKH Devnet without prior experience with Optimism, Docker, or Linux administration. Every command is included and no steps are assumed.
 
 ---
 
 ## ⚙️ Requirements
 
-To follow this setup, you will need:
-
-- An Ubuntu 22.04+ server with **root** access
-- A domain name (e.g. `rpc.raakh.net`) that points to your server
+- Ubuntu 22.04+ server with **root** access
+- Domain pointing to your server (e.g. `rpc.raakh.net`)
 - Open ports: `443`, `80`, `8545`, `9545`, `30303`, `9001`
 - Installed tools:
   - `git`, `curl`
@@ -38,129 +21,110 @@ To follow this setup, you will need:
 
 ```
 raakh-network/
-├── LICENSE                      ← MIT License
-├── README.md                    ← This file
+├── README.md
+├── LICENSE
 ├── .gitignore
-├── optimism-package/            ← Source of OP Stack (TODO – add files)
-│   └── network_params.yaml      ← Kurtosis parameters (TODO – add file)
-└── raakh-setup-files/
-    ├── genesis.json             ← Chain genesis (TODO – add file)
-    ├── install-raakh.sh         ← Auto-install script
-    └── nginx.conf               ← Nginx reverse proxy config
+├── optimism-package/            ← OP Stack source (add manually)
+│   ├── network_params.yaml
+│   └── ...
+├── raakh-setup-files/
+│   ├── install-raakh.sh         ← Installer script (add manually)
+│   ├── genesis.json             ← Chain genesis file (add manually)
+│   └── nginx.conf               ← Nginx reverse proxy
+└── scripts/
+    ├── init_node.sh             ← Optional helper
+    └── build_stack.sh           ← Optional helper
 ```
 
-Files marked as `TODO` do not contain real data yet. Upload them manually before running the installer.
+---
+
+## 🚧 Manual File Upload Notice
+
+Some components are not included in this repository. Before running any commands, manually place the following files:
+
+- `genesis.json` and `install-raakh.sh` inside `raakh-setup-files/`
+- The full OP Stack source inside `optimism-package/`
+
+Commit these files to your fork or local clone after adding them.
 
 ---
 
-## 📦 Manual File Upload Notice
+## Step 1 – Clone the Repository
 
-Some components of the project—such as the `optimism-package` sources, `genesis.json`, and `install-raakh.sh`—were distributed outside of this repository. You must manually place these files into the correct directories before executing any setup commands. Once added, commit them to your own fork or clone.
+```bash
+git clone https://github.com/YOUR-USERNAME/raakh-network.git
+cd raakh-network
+```
 
----
+## Step 2 – Prepare Required Files
 
-## 🚀 Step-by-Step Installation Guide
+Ensure that `raakh-setup-files/` contains `genesis.json`, `install-raakh.sh`, and `nginx.conf`. Also place the OP Stack source code inside `optimism-package/`.
 
-### Stage 2 – Install Nginx and Certbot (SSL)
+## Step 3 – Install System Dependencies
 
-1. Install Nginx:
-   ```bash
-   sudo apt install nginx -y
-   ```
-   Check the service status:
-   ```bash
-   systemctl status nginx
-   ```
-   If it is not running, start and enable it:
-   ```bash
-   sudo systemctl start nginx
-   sudo systemctl enable nginx
-   ```
-2. Install Certbot for free SSL certificates:
-   ```bash
-   sudo apt install certbot python3-certbot-nginx -y
-   ```
-   Ensure your domain has an **A record** pointing to the server IP.
+```bash
+sudo apt update
+sudo apt install -y curl git docker.io docker-compose nginx certbot python3-certbot-nginx build-essential
+sudo systemctl enable --now docker
+```
 
----
+## Step 4 – Install Kurtosis
 
-### Stage 3 – Get the Project from GitHub
+```bash
+curl -fsSL https://kurtosis.com/install | bash
+echo 'export PATH="$HOME/.kurtosis/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+kurtosis version
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/raakh-network.git
-   cd raakh-network
-   ```
-2. Review the files located in `raakh-setup-files/`:
-   - `genesis.json` – genesis block configuration (TODO if empty)
-   - `install-raakh.sh` – automated installer
-   - `nginx.conf` – nginx configuration for the RPC endpoint
+## Step 5 – Launch the OP Stack Network
 
-   The `optimism-package/` directory should contain the full OP Stack source used by Kurtosis.
+```bash
+cd optimism-package
+kurtosis run . --enclave raakhnet
+```
 
----
+This command starts `op-geth`, `op-node`, and the other required services in containers. Wait until the RPC service is reachable on port `8545`.
 
-### Stage 4 – Run the Full OP Stack with Kurtosis
+## Step 6 – Configure Nginx and Obtain SSL
 
-1. Install the Kurtosis CLI:
-   ```bash
-   curl -fsSL https://kurtosis.com/install | bash
-   echo 'export PATH="$HOME/.kurtosis/bin:$PATH"' >> ~/.bashrc
-   source ~/.bashrc
-   kurtosis version
-   ```
-2. Launch the network:
-   ```bash
-   cd optimism-package/
-   kurtosis run . --enclave raakhnet
-   ```
-   This command starts `op-geth`, `op-node`, the batcher, proposer, and bridges inside containers.
+```bash
+sudo cp raakh-setup-files/nginx.conf /etc/nginx/sites-available/rpc.raakh.net
+sudo ln -s /etc/nginx/sites-available/rpc.raakh.net /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+sudo certbot --nginx -d rpc.raakh.net
+```
 
----
+The RPC will now be accessible via `https://rpc.raakh.net`.
 
-### Stage 5 – Configure Nginx for `rpc.raakh.net`
+## Step 7 – Connect to MetaMask
 
-1. Copy the provided configuration:
-   ```bash
-   sudo cp raakh-setup-files/nginx.conf /etc/nginx/sites-available/rpc.raakh.net
-   sudo ln -s /etc/nginx/sites-available/rpc.raakh.net /etc/nginx/sites-enabled/
-   ```
-2. Test and reload nginx:
-   ```bash
-   sudo nginx -t
-   sudo systemctl reload nginx
-   ```
-3. Obtain an SSL certificate:
-   ```bash
-   sudo certbot --nginx -d rpc.raakh.net
-   ```
+Open MetaMask and add a custom network with the following values:
+
+| Field          | Value                 |
+|----------------|-----------------------|
+| Network Name   | RAAKH Devnet          |
+| RPC URL        | https://rpc.raakh.net |
+| Chain ID       | 919191                |
+| Currency       | KHAS                  |
+| Explorer URL   | (optional)            |
+
+After saving, you can deploy contracts and interact with the chain.
 
 ---
 
-### Stage 6 – Connect MetaMask
+## 🔧 Troubleshooting
 
-In MetaMask choose **Add Network** and fill in the following values:
+- **SSL certificate failed** – ensure your domain points to this server and port 80 is open before running Certbot.
+- **Kurtosis errors** – check Docker is running and the OP Stack source files are present.
+- **Geth not syncing** – verify the genesis file and check container logs for `op-geth`.
 
-| Field            | Value                  |
-|------------------|------------------------|
-| Network Name     | RAAKH Devnet           |
-| RPC URL          | https://rpc.raakh.net  |
-| Chain ID         | 919191                 |
-| Currency Symbol  | KHAS                   |
-| Explorer         | (optional)             |
-
-Once added, you can deploy contracts and interact with the chain through `https://rpc.raakh.net`.
-
----
-
-## ✅ Ready to Go!
-
-You now have a fully functional devnet. Feel free to extend it with Blockscout or IPFS integration once the core components are running.
+Optional services such as Blockscout or IPFS can be added once the core network is running.
 
 ---
 
 ## 🤝 Credits
 
-Created by **Soheil Nikzad** (<https://raakh.net>). Inspired by Optimism's OP Stack and tailored for independent chains like RAAKH.
+Created by **Soheil Nikzad** (<https://raakh.net>). Inspired by Optimism's OP Stack and released under the [MIT License](LICENSE).
 
-Released under the [MIT License](LICENSE).
