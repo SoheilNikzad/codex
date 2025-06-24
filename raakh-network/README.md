@@ -1,34 +1,44 @@
 # RAAKH Network
 
-This directory contains notes and setup instructions for launching the **RAAKH** blockchain. The guidance below merges the original RAAKH setup guide with the lightweight chain notes so everything is in one place.
+This directory contains setup instructions and lightweight chain notes for running the **RAAKH** blockchain. The README combines the main RAAKH setup guide with concise hints for spinning up a minimal test chain.
 
-## Repository Layout
+## Directory Structure
 
-- `scripts/install-raakh.sh` *(TODO – add file)* – helper script to install prerequisites and build the chain.
-- `scripts/init_raakh_node.sh` *(TODO – add file)* – initializes a local node using the genesis file.
-- `genesis.json` *(TODO – add file)* – sample genesis configuration with chain ID and initial balances.
-- `contracts/` *(TODO – add sample contracts)* – example smart contracts for testing.
-- `docs/WHITEPAPER.md` *(TODO – add file)* – extended background on the project.
+```
+raakh-network/
+├── README.md
+├── scripts/
+│   ├── install-raakh.sh      # TODO – add file
+│   └── init_raakh_node.sh    # TODO – add file
+├── genesis.json              # TODO – add file
+├── contracts/                # TODO – add sample contracts
+├── docs/
+│   └── WHITEPAPER.md         # TODO – add file
+```
 
 ## Getting Started
 
-1. Review the sample `genesis.json` and adjust parameters such as `chainId`, account balances, and gas limits.
-2. Run `scripts/install-raakh.sh` to fetch dependencies and compile the underlying EVM client.
-3. Execute `scripts/init_raakh_node.sh` to initialize a node using `genesis.json`.
-4. Start the node and verify that blocks are produced.
+1. **Prepare the genesis file**  
+   Edit `genesis.json` to set the `chainId`, pre-funded accounts, and gas limits. If the file is missing, create it based on your network parameters.
+2. **Install dependencies**  
+   Run `scripts/install-raakh.sh` to install required tooling and build the underlying EVM client. This script should set up Go, fetch the RAAKH source, and compile binaries. *(Currently missing: see TODOs.)*
+3. **Initialize the node**  
+   Execute `scripts/init_raakh_node.sh` to create the data directory and import `genesis.json`. Check that the command populates the chain database correctly.
+4. **Start the network**  
+   Launch your RAAKH node with appropriate flags (RPC port, network ID, and so on). Confirm blocks are produced and the node accepts RPC requests.
 
-These steps mirror the original setup guide and ensure that the chain boots with the expected parameters.
+These steps align with the official setup guide while incorporating the lightweight instructions below.
 
 ## Lightweight Chain Notes
 
-For quick experimentation, you can run a lightweight test chain:
+For rapid testing, you can run a stripped-down network:
 
-1. Use the minimal `genesis.json` provided above (or create your own) with a low difficulty.
+1. Use a minimal `genesis.json` with low difficulty and few accounts.
 2. Start the node with a small block gas limit and enable HTTP RPC on `localhost:8545`.
-3. Deploy any contracts from `contracts/` to interact with the chain.
+3. Deploy contracts from `contracts/` to test interactions. You may create a simple `sample_contract.sol` for experimentation.
 
-This lightweight mode lets you validate configuration changes without running a full validator network.
+Running in this mode helps you validate configuration changes without a full validator set.
 
 ## Contributing
 
-Improvements and pull requests are welcome. Be sure to keep configuration files up to date and document any custom scripts.
+Improvements are welcome! If you add scripts or configuration files, be sure to update the README and keep the directory structure consistent.
